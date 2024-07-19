@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title Page</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+</head>
+
+<body>
+    <h1 class="text-center">Hello World</h1>
+
+    <table class="table">
+        <tr>
+            <td>Thao tác</td>
+            <td>Tên </td>
+            <td>Mô tả</td>
+        </tr>
+        <tbody id="danhsachchungloai"></tbody>
+    </table>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        function xoachungloai(id) {
+            console.log('id', id);
+            if (window.confirm("Bạn có muốn xóa chủng loại này không?") == true) {
+                $.ajax({
+                    type: "Delete",
+                    url: "https://localhost:7193/api/ChungLoai",
+                    headers: { "Content-Type": "application/json" },
+                    data: JSON.stringify({ 'id': id }),
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Xóa thành công',
+                                text: 'Chủng loại đã được xóa.'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response.message || 'Có lỗi xảy ra khi xóa chủng loại.'
+                            });
+                        }
+                    },
+                });
+
+            }
+        }
+
+
+        $(document).ready(function () {
+            $.ajax({
+                type: "Get",
+                url: "https://localhost:7193/api/ChungLoai",
+                dataType: "json",
+
+                success: function (response) {
+                    var bodyHtml = "";
+                    $.map(response.data.data, function (elementOrValue, indexOrKey) {
+                        console.log('elementOrValue');
+                        bodyHtml +=
+                            `<tr>
+                                <td>
+                                    <button class="btn btn-primary" onclick="suachungloai('${elementOrValue.id}')" >Sửa</button>
+                                    <button class="btn btn-danger" onclick="xoachungloai('${elementOrValue.id}')" >Xoá</button>
+                                </td>
+                                <td>${elementOrValue.name}</td>
+                                <td>${elementOrValue.description}</td>
+                            </tr>`;
+
+                    });
+                    $("#danhsachchungloai").html(bodyHtml);
+                    console.log(response);
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
